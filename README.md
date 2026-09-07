@@ -22,3 +22,5 @@
 
 > [!TIP]
 > Para el script "reg_system_cfg" es conveniente ejecutarlo en Modo Seguro.
+
+###### bypivon@protonmail.com
