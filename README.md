@@ -9,7 +9,7 @@
 - Enfocado a reducir el tiempo de respuesta en mouse y teclado, además tiene la posibilidad de quitar todos los sonidos del sistema operativo.
 
 ## reg_system_cfg
-- Enfocado a evitar/limitar todas las funciones y conexiones con Microsoft (telemetria) que puedan afectar a las sesiones de juego.
+- Enfocado a evitar/limitar todas las conexiones con Microsoft (telemetria) y funciones innecesarias que puedan afectar a las sesiones de juego.
 
 > [!IMPORTANT]
 > Es importante tener el hardware adecuado y con buenas temperaturas para aprovechar el máximo rendimiento de un sistema.
