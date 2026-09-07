@@ -8,6 +8,7 @@ REM dc: xicwmd
 REM mail: bypivon@protonmail.com
 REM site: https://sites.google.com/view/bypivon/home
 REM github: https://github.com/bypivon/win-scripts
+REM Invoke-WebRequest -Uri https://github.com/bypivon/win-scripts/archive/refs/tags/kbm.zip -OutFile "%USERPROFILE%\Desktop\win-scripts.zip"
 REM =============================================
 
 REM =============================================
