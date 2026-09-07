@@ -16,7 +16,8 @@
 
 > [!NOTE]
 > Usar los scripts en un sistema limpio/actualizado y libre de modificaciones, si va aplicar ajustes avanzados crear un punto de restauración.
-> Es posible que su software Antivirus bloquee algunas de las funciones debido a las modificaciones que realiza, como limitar la Seguridad de Windows que afecta al rendimiento. Asegúrese de que no esté bloqueado/eliminado y si esto ocurre, añada el script a la lista de programas permitidos.
+> Es posible que su software Antivirus bloquee algunas de las funciones debido a las modificaciones que realiza, como limitar la Seguridad de Windows que afecta al rendimiento.
+> Asegúrese de que no esté bloqueado/eliminado y si esto ocurre, añada el script a la lista de programas permitidos.
 > Reiniciar después de cada cambio.
 > Se agradecen los comentarios y las críticas constructivas.
 
