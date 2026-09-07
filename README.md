@@ -5,10 +5,10 @@
 - Enfocado al gaming.
 - Uso en Windows 10 y 11.
 
-##reg_kbm_cfg
+## reg_kbm_cfg
 - Enfocado a reducir el tiempo de respuesta en mouse y teclado, además tiene la posibilidad de quitar todos los sonidos del sistema operativo.
 
-##reg_system_cfg
+## reg_system_cfg
 - Enfocado a evitar/limitar todas las funciones y conexiones con Microsoft (telemetria) que puedan afectar a las sesiones de juego.
 
 > [!IMPORTANT]
