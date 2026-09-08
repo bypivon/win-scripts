@@ -15,21 +15,26 @@ REM =============================================
 REM VERIFICATION OF PRIVILEGES (ADMIN)
 REM =============================================
 REM Comprobar pwsh
-if not exist "%SYSTEMROOT%\System32\WindowsPowerShell\v1.0\powershell.exe" (
-   echo [ERROR]: powershell.exe no encontrado en %SYSTEMROOT%.
+if not exist "%SYSTEMROOT%\System32\WindowsPowerShell\v1.0\powehell.exe" (
+   echo [ERROR]: %SYSTEMROOT%\System32\WindowsPowerShell\v1.0\powershell.exe not found.
    pause
    exit /b 1
 )
 REM Comprobar privilegios y relanzar si no es admin
 PowerShell -NoProfile -ExecutionPolicy Bypass -Command "$IsAdmin=([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator); if(-not $IsAdmin){try{Start-Process -FilePath '%~f0' -Verb RunAs}catch{Write-Error 'Elevacion rechazada o fallida.';exit 1}; exit 1}"
-REM Si no es admin y falla la elevación, cerrar el script
+REM Si no es admin y falla la elevacion, cerrar el script
 if %errorlevel% neq 0 (
+   echo [ERROR]: Admin privileges not granted.
    exit /b 1
 )
-REM PowerShell -NoProfile -ExecutionPolicy Bypass "$IsAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator); if (-not $IsAdmin) { Start-Process -FilePath '%~f0' -Verb RunAs; exit 1 }"
-REM if errorlevel 1 (
-REM   exit /b
-REM)
+REM =============================================
+REM VALIDATE WIN TOOLS
+REM =============================================
+if not exist "%SYSTEMROOT%\System32\reg.exe" (
+   echo [ERROR]: %SYSTEMROOT%\System32\reg.exe not found.
+   pause
+   exit /b 1
+)
 REM =============================================
 setlocal EnableDelayedExpansion
 REM =============================================
@@ -54,14 +59,6 @@ set "alert_info=%c%[INFO]:%rset%"
 set "alert_status=%m%[ESTADO]:%rset%"
 set "alert_log=%c%[LOG]:%rset%"
 set "alert_question=[?]:"
-REM =============================================
-REM VALIDATE WIN TOOLS
-REM =============================================
-if not exist "%SYSTEMROOT%\System32\reg.exe" (
-   echo %alert_error% reg.exe no encontrado en %SYSTEMROOT%.
-   pause
-   exit /b 1
-)
 REM =============================================
 REM MAIN MENU
 REM =============================================
