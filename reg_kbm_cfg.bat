@@ -4,7 +4,6 @@ title bypivon_kbm_script - bypivon@protonmail.com
 REM =============================================
 REM script para Windows 10/11
 REM author: bypivon
-REM dc: xicwmd
 REM mail: bypivon@protonmail.com
 REM site: https://sites.google.com/view/bypivon/home
 REM github: https://github.com/bypivon/win-scripts
