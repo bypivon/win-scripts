@@ -14,7 +14,7 @@ REM =============================================
 REM VERIFICATION OF PRIVILEGES (ADMIN)
 REM =============================================
 REM Comprobar pwsh
-if not exist "%SYSTEMROOT%\System32\WindowsPowerShell\v1.0\powehell.exe" (
+if not exist "%SYSTEMROOT%\System32\WindowsPowerShell\v1.0\powershell.exe" (
    echo [ERROR]: %SYSTEMROOT%\System32\WindowsPowerShell\v1.0\powershell.exe not found.
    pause
    exit /b 1
