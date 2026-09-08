@@ -8,16 +8,28 @@ REM dc: xicwmd
 REM mail: bypivon@protonmail.com
 REM site: https://sites.google.com/view/bypivon/home
 REM github: https://github.com/bypivon/win-scripts
-REM Invoke-WebRequest -Uri https://github.com/bypivon/win-scripts/archive/refs/tags/kbm.zip -OutFile "%USERPROFILE%\Desktop\win-scripts.zip"
+REM ps1: Invoke-WebRequest -Uri https://github.com/bypivon/win-scripts/archive/refs/heads/main.zip -OutFile "%USERPROFILE%\Desktop\win-scripts.zip"
 REM =============================================
 
 REM =============================================
 REM VERIFICATION OF PRIVILEGES (ADMIN)
 REM =============================================
-PowerShell -NoProfile -ExecutionPolicy Bypass "$IsAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator); if (-not $IsAdmin) { Start-Process -FilePath '%~f0' -Verb RunAs; exit 1 }"
-if errorlevel 1 (
-   exit /b
+REM Comprobar pwsh
+if not exist "%SYSTEMROOT%\System32\WindowsPowerShell\v1.0\powershell.exe" (
+   echo [ERROR]: powershell.exe no encontrado en %SYSTEMROOT%.
+   pause
+   exit /b 1
 )
+REM Comprobar privilegios y relanzar si no es admin
+PowerShell -NoProfile -ExecutionPolicy Bypass -Command "$IsAdmin=([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator); if(-not $IsAdmin){try{Start-Process -FilePath '%~f0' -Verb RunAs}catch{Write-Error 'Elevacion rechazada o fallida.';exit 1}; exit 1}"
+REM Si no es admin y falla la elevación, cerrar el script
+if %errorlevel% neq 0 (
+   exit /b 1
+)
+REM PowerShell -NoProfile -ExecutionPolicy Bypass "$IsAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator); if (-not $IsAdmin) { Start-Process -FilePath '%~f0' -Verb RunAs; exit 1 }"
+REM if errorlevel 1 (
+REM   exit /b
+REM)
 REM =============================================
 setlocal EnableDelayedExpansion
 REM =============================================
