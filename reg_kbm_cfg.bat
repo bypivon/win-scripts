@@ -1,6 +1,6 @@
 @echo off
+chcp 65001 >nul 2>&1
 title bypivon_kbm_script - bypivon@protonmail.com
-
 REM =============================================
 REM script para Windows 10/11
 REM author: bypivon
@@ -85,7 +85,7 @@ if errorlevel 1 goto opcion_1
  set "msg_alert=Aplicando ajustes"
  REM set "MouseFeedbackEnabled=0"
  set "MouseSensitivity=10"
- set "MouseDelay=0"
+ REM set "MouseDelay=0"
  set "MouseSpeed=0"
  set "KeyboardDelay=0"
  set "KeyboardSpeed=31"
@@ -93,8 +93,10 @@ if errorlevel 1 goto opcion_1
  set "MouseThreshold2=0"
  set "MouseTrails=0"
  set "DoubleClickSpeed=480"
+ set "MouseHoverTime=200"
  set "ActiveWindowTracking=0"
  set "DataQueueSize=16"
+ set "PrintScreenKeyForSnippingEnabled=1"
  set "apply_curve=0"
  set "nosound=0"
    echo %alert_info% Recomendado para Win10, si selecciona NO se usara la curva default.
@@ -123,16 +125,18 @@ if errorlevel 1 goto opcion_1
  set "msg_alert=Restableciendo valores predeterminados"
  REM set "MouseFeedbackEnabled=1"
  set "MouseSensitivity=10"
- set "MouseDelay=1"
+ REM set "MouseDelay=1"
  set "MouseSpeed=1"
  set "KeyboardDelay=1"
  set "KeyboardSpeed=31"
  set "MouseThreshold1=6"
  set "MouseThreshold2=10"
  set "MouseTrails=0"
+ set "MouseHoverTime=400"
  set "DoubleClickSpeed=500"
  set "ActiveWindowTracking=0"
  set "DataQueueSize=100"
+ set "PrintScreenKeyForSnippingEnabled=1"
  set "WinSounds=.Default"
  set "Beep=yes"
  set "ExtendedSounds=yes"
@@ -169,8 +173,9 @@ REM Mouse and keyboard buffer sizes credits (https://sites.google.com/view/melod
    call :reg_add_log "HKEY_CURRENT_USER\Control Panel\Mouse" "MouseThreshold2" "REG_SZ" "%MouseThreshold2%"
    REM MAS MOUSE
    call :reg_add_log "HKEY_CURRENT_USER\Control Panel\Mouse" "MouseSensitivity" "REG_SZ" "%MouseSensitivity%"
+   call :reg_add_log "HKEY_CURRENT_USER\Control Panel\Mouse" "MouseHoverTime" "REG_SZ" "%MouseHoverTime%"
    call :reg_add_log "HKEY_CURRENT_USER\Control Panel\Mouse" "DoubleClickSpeed" "REG_SZ" "%DoubleClickSpeed%"
-   call :reg_add_log "HKEY_CURRENT_USER\Control Panel\Mouse" "MouseDelay" "REG_SZ" "%MouseDelay%"
+   REM call :reg_add_log "HKEY_CURRENT_USER\Control Panel\Mouse" "MouseDelay" "REG_SZ" "%MouseDelay%"
    call :reg_add_log "HKEY_CURRENT_USER\Control Panel\Mouse" "MouseTrails" "REG_SZ" "%MouseTrails%"
    call :reg_add_log "HKEY_CURRENT_USER\Control Panel\Mouse" "ActiveWindowTracking" "REG_DWORD" "%ActiveWindowTracking%"
    REM cantidad de eventos que pueden ser almacenados en la cola del controlador del mouse (tweak=16, defalut=100)
@@ -179,6 +184,9 @@ REM Mouse and keyboard buffer sizes credits (https://sites.google.com/view/melod
    REM AJUSTES TECLADO
    call :reg_add_log "HKEY_CURRENT_USER\Control Panel\Keyboard" "KeyboardDelay" "REG_SZ" "%KeyboardDelay%"
    call :reg_add_log "HKEY_CURRENT_USER\Control Panel\Keyboard" "KeyboardSpeed" "REG_SZ" "%KeyboardSpeed%"
+   
+   call :reg_add_log "HKEY_CURRENT_USER\Control Panel\Keyboard" "PrintScreenKeyForSnippingEnabled" "REG_DWORD" "%PrintScreenKeyForSnippingEnabled%"
+
    REM cantidad de eventos que pueden ser almacenados en la cola del controlador del teclado (tweak=16, defalut=100)
    call :reg_add_log "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\kbdclass\Parameters" "KeyboardDataQueueSize" "REG_DWORD" "%DataQueueSize%"
 
