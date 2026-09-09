@@ -15,7 +15,7 @@ REM VERIFICATION OF PRIVILEGES (ADMIN)
 REM =============================================
 REM Comprobar pwsh
 if not exist "%SYSTEMROOT%\System32\WindowsPowerShell\v1.0\powershell.exe" (
-   echo [ERROR]: %SYSTEMROOT%\System32\WindowsPowerShell\v1.0\powershell.exe not found.
+   echo [ERROR]: powershell.exe not found.
    pause
    exit /b 1
 )
@@ -30,7 +30,7 @@ REM =============================================
 REM VALIDATE WIN TOOLS
 REM =============================================
 if not exist "%SYSTEMROOT%\System32\reg.exe" (
-   echo [ERROR]: %SYSTEMROOT%\System32\reg.exe not found.
+   echo [ERROR]: reg.exe not found.
    pause
    exit /b 1
 )
@@ -97,6 +97,7 @@ if errorlevel 1 goto opcion_1
  set "ActiveWindowTracking=0"
  set "DataQueueSize=16"
  set "PrintScreenKeyForSnippingEnabled=1"
+ set "WppRecorder=0"
  set "apply_curve=0"
  set "nosound=0"
    echo %alert_info% Recomendado para Win10, si selecciona NO se usara la curva default.
@@ -137,6 +138,7 @@ if errorlevel 1 goto opcion_1
  set "ActiveWindowTracking=0"
  set "DataQueueSize=100"
  set "PrintScreenKeyForSnippingEnabled=1"
+ set "WppRecorder=1"
  set "WinSounds=.Default"
  set "Beep=yes"
  set "ExtendedSounds=yes"
@@ -184,11 +186,16 @@ REM Mouse and keyboard buffer sizes credits (https://sites.google.com/view/melod
    REM AJUSTES TECLADO
    call :reg_add_log "HKEY_CURRENT_USER\Control Panel\Keyboard" "KeyboardDelay" "REG_SZ" "%KeyboardDelay%"
    call :reg_add_log "HKEY_CURRENT_USER\Control Panel\Keyboard" "KeyboardSpeed" "REG_SZ" "%KeyboardSpeed%"
-   
    call :reg_add_log "HKEY_CURRENT_USER\Control Panel\Keyboard" "PrintScreenKeyForSnippingEnabled" "REG_DWORD" "%PrintScreenKeyForSnippingEnabled%"
 
    REM cantidad de eventos que pueden ser almacenados en la cola del controlador del teclado (tweak=16, defalut=100)
    call :reg_add_log "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\kbdclass\Parameters" "KeyboardDataQueueSize" "REG_DWORD" "%DataQueueSize%"
+
+   REM Marcas de tiempo en cada evento registrado por los controladores del teclado/mouse
+   call :reg_add_log "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\kbdclass\Parameters" "WppRecorder_UseTimeStamp" "REG_DWORD" "%WppRecorder%"
+   call :reg_add_log "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\kbdhid\Parameters" "WppRecorder_UseTimeStamp" "REG_DWORD" "%WppRecorder%"
+   call :reg_add_log "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\mouclass\Parameters" "WppRecorder_UseTimeStamp" "REG_DWORD" "%WppRecorder%"
+   call :reg_add_log "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\mouhid\Parameters" "WppRecorder_UseTimeStamp" "REG_DWORD" "%WppRecorder%"
 
    if "%apply_curve%"=="1" (
       REM CURVA
