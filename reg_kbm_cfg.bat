@@ -285,9 +285,10 @@ REM Uso para borrar valor: call :reg_del_log "HKEY_CURRENT_USER\Control Panel\Mo
 REM Uso para borrar clave: call :reg_del_log "HKEY_CURRENT_USER\Control Panel\Mouse"
 REM =============================================
 :reg_del_log
- set "key_path=%~1"
- set "value_name=%~2"
- call :get_ts
+if "%~1"=="" ( goto :eof )
+set "key_path=%~1"
+set "value_name=%~2"
+call :get_ts
 
 if defined value_name (
    REM borrar valor concreto
