@@ -87,6 +87,7 @@ echo ---------------------------------------------------------------------------
 echo.
 echo %alert_info% La limpieza completa elimina archivos de Descargas, Documentos, Musica, Papelera, etc.
 echo         Tambien residuos de NVIDIA, AMD, Epic, Steam y Discord.
+echo %alert_warning% Cierre todo antes de ejecutar.
 echo.
 echo 1. Realizar limpieza profunda
 echo 2. Crear punto de restauracion
@@ -109,7 +110,7 @@ if errorlevel 1 goto clean_confirm
    taskkill /F /IM explorer.exe >nul 2>&1
 
    REM Limpiar archivos temporales
-   echo %alert_log% Limpiando temp sistema y usuario ..
+   echo %alert_log% Limpiando temporales sistema y usuario ..
    call :clean_path_all "%SystemRoot%\Temp"
    call :clean_path_all "%Temp%"
    call :clean_file "%SystemDrive%\*.tmp"
@@ -182,8 +183,8 @@ if errorlevel 1 goto clean_confirm
    call :clean_folder "%LocalAppData%\Microsoft\Windows\History"
    call :clean_path_all "%SystemRoot%\System32\config\systemprofile\AppData\Local\Microsoft\Windows\History"
 
-   REM Limpiar cache del usuario
-   echo %alert_log% Limpiando cache del usuario y mas ..
+   REM Limpiar cache microsoft
+   echo %alert_log% Limpiando cache del sistema general y mas ..
    REM Cachés de Windows (miniaturas, datos temporales, etc)
    call :clean_path_all "%LocalAppData%\Microsoft\Windows\Caches"
    call :clean_path_all "%SystemRoot%\System32\config\systemprofile\AppData\Local\Microsoft\Windows\Caches"
@@ -202,7 +203,7 @@ if errorlevel 1 goto clean_confirm
    call :clean_path_all "%LocalAppData%\CrashDumps"
 
    REM BASURA EN LA UNIDAD PRINCIPAL DEL SISTEMA
-   echo %alert_log% Limpiando logs y temp unidad principal del sistema ..
+   echo %alert_log% Limpiando logs y temporales unidad principal del sistema ..
    REM Archivos de log generados por aplicaciones de 32 bits en sistemas de 64 bits.
    call :clean_path_all "%SystemRoot%\SysWOW64\LogFiles"
    REM Carpeta temporal usada por procesos del sistema.
@@ -256,7 +257,7 @@ if errorlevel 1 goto clean_confirm
    REM Limpiar informes de errores y eventos del sistema
    echo %alert_log% Deteniendo servicios de informe de errores y eventos ..
    REM SVCS STOP
-   for %%s in ( "WerSvc" "Wecsvc" "EventLog" "pla" ) do ( sc stop %%s >nul 2>&1 & timeout /t 2 /nobreak >nul 2>&1 )
+   for %%s in ( "WerSvc" "Wecsvc" "EventLog" ) do ( sc stop %%s >nul 2>&1 & timeout /t 2 /nobreak >nul 2>&1 )
 
    REM Informes de errores de Windows
    echo %alert_log% Limpiando informes de errores de Windows ..
@@ -274,7 +275,7 @@ if errorlevel 1 goto clean_confirm
    for %%w in ( "Application" "Security" "System" "Setup" "ForwardedEvents" ) do ( wevtutil cl %%w >nul 2>&1 )
 
    REM SVCS START
-   for %%s in ( "WerSvc" "Wecsvc" "EventLog" "pla" ) do ( sc start %%s >nul 2>&1 )
+   for %%s in ( "WerSvc" "Wecsvc" "EventLog" ) do ( sc start %%s >nul 2>&1 )
    
    REM Cache ubicacion geografica en Windows (GPS, Wi-Fi, red).
    echo %alert_log% Deteniendo servicio de geolocalizacion y mapas ..
@@ -374,7 +375,7 @@ if errorlevel 1 goto clean_confirm
    call :reg_del_log "HKEY_CURRENT_USER\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache"
   
    REM Limpiar archivos Windows Defender
-   echo %alert_log% Limpiando basura Windows Defender ..
+   echo %alert_log% Limpiando datos generados por Windows Defender ..
    call :clean_path_all "%ProgramData%\Microsoft\Windows Defender\Scans\History\Service"
    call :clean_path_all "%ProgramData%\Microsoft\Windows Defender\Scans\History\Results"
    call :clean_path_all "%ProgramData%\Microsoft\Windows Defender\Scans\Software Monitoring"
@@ -390,11 +391,11 @@ if errorlevel 1 goto clean_confirm
    call :clean_path_all "%ProgramData%\Microsoft\Windows Defender Advanced Threat Protection\ImageCache"
    call :clean_path_all "%ProgramData%\Microsoft\Windows Defender Advanced Threat Protection\DataCollection"
    call :clean_path_all "%ProgramData%\Microsoft\Windows Security Health\Logs"
-   
+
    REM Limpiar Windows Update
    echo %alert_log% Deteniendo servicios de Win Update ..
    REM SVCS STOP
-   for %%s in ( "wuauserv" "UsoSvc" "wscsvc" "CryptSvc" ) do ( sc stop %%s >nul 2>&1 & timeout /t 2 /nobreak >nul 2>&1 )
+   for %%s in ( "wuauserv" "UsoSvc" "wscsvc" ) do ( sc stop %%s >nul 2>&1 & timeout /t 2 /nobreak >nul 2>&1 )
 
    REM Detener tareas programadas relacionadas con Win Update
    echo %alert_log% Deteniendo tareas de Win Update ..
@@ -424,7 +425,7 @@ if errorlevel 1 goto clean_confirm
    call :clean_path_all "%ProgramData%\USOShared\Logs"
    REM call :clean_path_all "%ProgramData%\USOPrivate"
    REM SVCS START
-   for %%s in ( "wuauserv" "UsoSvc" "wscsvc" "cryptsvc" ) do ( sc start %%s >nul 2>&1 )
+   for %%s in ( "wuauserv" "UsoSvc" "wscsvc" ) do ( sc start %%s >nul 2>&1 )
 
    REM Limpiar Package Cache
    echo %alert_log% Limpiando cache aplicaciones Microsoft ..
