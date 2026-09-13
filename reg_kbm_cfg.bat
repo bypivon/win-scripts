@@ -83,6 +83,7 @@ if errorlevel 2 goto opcion_2
 if errorlevel 1 goto opcion_1
 :opcion_1
  set "msg_alert=Aplicando ajustes"
+ set "reset=0"
  REM set "MouseFeedbackEnabled=0"
  set "MouseSensitivity=10"
  REM set "MouseDelay=0"
@@ -98,9 +99,10 @@ if errorlevel 1 goto opcion_1
  set "DataQueueSize=16"
  set "PrintScreenKeyForSnippingEnabled=1"
  set "WppRecorder=0"
+ set "PointerShadow=0"
  set "apply_curve=0"
  set "nosound=0"
-   echo %alert_info% Recomendado para Win10, si selecciona NO se usara la curva default.
+   echo %alert_info%Recomendado para Win10, si selecciona NO se usara la curva default.
    choice /c YNO /n /m "%alert_question%Desea aplicar el fix por MarkC? Y/N/O:"
    if errorlevel 3 goto menu_kbm
    if errorlevel 2 goto winsound
@@ -110,7 +112,7 @@ if errorlevel 1 goto opcion_1
       set "SmoothMouseYCurve=0000000000000000000038000000000000007000000000000000a800000000000000e00000000000"
    )
 :winsound
-   echo %alert_info% Desactiva los sonidos de Windows, asi evitar confusiones.
+   echo %alert_info%Desactiva los sonidos de Windows, asi evitar ruido inesperado.
    choice /c YNO /n /m "%alert_question%Desea desactivar todos los sonidos del sistema? Y/N/O:"
    if errorlevel 3 goto menu_kbm
    if errorlevel 2 goto apply_kbm_tweaks
@@ -124,6 +126,7 @@ if errorlevel 1 goto opcion_1
    )
 :opcion_2
  set "msg_alert=Restableciendo valores predeterminados"
+ set "reset=1"
  REM set "MouseFeedbackEnabled=1"
  set "MouseSensitivity=10"
  REM set "MouseDelay=1"
@@ -162,6 +165,9 @@ REM Mouse and keyboard buffer sizes credits (https://sites.google.com/view/melod
    REM AJUSTES MOUSE
    REM https://www.elevenforum.com/t/enable-or-disable-mouse-haptic-feedback-in-windows-11.46083/
    REM call :reg_add_log "HKEY_CURRENT_USER\Software\Microsoft\Windows NT\CurrentVersion\Windows\EnhancedPenSupport" "MouseFeedbackEnabled" REG_DWORD "%MouseFeedbackEnabled%"
+
+   REM https://www.ninjaone.com/blog/enable-or-disable-mouse-pointer-shadow-in-windows/
+   call :reg_add_log "HKEY_CURRENT_USER\Control Panel\Desktop" "PointerShadow" "REG_SZ" "%PointerShadow%"
 
    REM LIMITACION DE LA FRECUENCIA DEL MOUSE PARA APPS EN 2DO PLANO (LAS APPS EN 2DO PLANO NO NECESITAN ALTAS TASAS DE SONDEO COMO LAS APPS EN 1ER PLANO)
    REM Podría ser útil en casos como el de un usuario con una CPU extremadamente lenta y un ratón de 8000 Hz.
@@ -212,6 +218,10 @@ REM Mouse and keyboard buffer sizes credits (https://sites.google.com/view/melod
       REM COMUNICACIONES (UserDuckingPreference - 0: Desactivar el resto de los sonidos cuando windows detecta actividad, 1: 80% reduccion, 2: 50% reduccion, 3: No hacer nada)
       call :reg_add_log "HKEY_CURRENT_USER\Software\Microsoft\Multimedia\Audio" "UserDuckingPreference" "REG_DWORD" "%UserDuckingPreference%"
    )
+   if "%reset%"=="1" (
+      REM https://www.ninjaone.com/blog/enable-or-disable-mouse-pointer-shadow-in-windows/
+      call :reg_del_log "HKEY_CURRENT_USER\Control Panel\Desktop" "PointerShadow"
+   )
 
    echo %alert_log% Puedes revisar logs en el directorio de ejecucion del script.
    echo %alert_success% Ajustes aplicados. Reinicia.
@@ -222,61 +232,60 @@ goto menu_kbm
 REM =============================================
 REM FUNCTIONS
 REM =============================================
-REM GET TIMESTAMP
+REM GET TIMESTAMP YYYY-MM-DD-HH:mm:ss
 REM =============================================
 :get_ts
- for /f "usebackq delims=" %%t in (`powershell -NoProfile -Command "(Get-Date).ToString('yyyy-MM-dd-HH:mm:ss')"`) do set "ts=%%t"
+   for /f "tokens=2-4 delims=/ " %%a in ("%date%") do set "ts=%%c-%%b-%%a-%time:~0,2%:%time:~3,2%:%time:~6,2%"
 goto :eof
 REM =============================================
 REM ADD/UPDATE REGLOG
 REM Uso: call :reg_add_log "HKEY_CURRENT_USER\Control Panel\Mouse" "MouseSensitivity" REG_SZ "1"
 REM =============================================
 :reg_add_log
- set "key_path=%~1"
- set "value_name=%~2"
- set "value_type=%~3"
- set "data=%~4"
- call :get_ts
+   set "key_path=%~1"
+   set "value_name=%~2"
+   set "value_type=%~3"
+   set "data=%~4"
+   call :get_ts
 
-REM comprobar existencia
-if not defined key_path (
-   echo [!ts!]-[AddModifyKey-ErrorNull] Missing KeyPath - !value_name! - !value_type! - !data! >> "%log_file%"
-   goto :eof
-)
-REM caso especial /ve
-if /i "!value_name!"=="/ve" (
-   if "!data!"=="" (
-      echo [!ts!]-[AddModifyKey-ErrorNull] Missing Data - !key_path! - !value_type! >> "%log_file%"
+   REM comprobar existencia
+   if not defined key_path (
+      echo [!ts!]-[AddModifyKey-ErrorNull] Missing Path - %value_name% - %value_type% - %data% >> "%log_file%"
       goto :eof
    )
-   reg add "!key_path!" /ve /d "!data!" /f >nul 2>&1
-   if !errorlevel! equ 0 (
-      echo [!ts!]-[AddModifyKey-Ok] !key_path! - !value_type! - !data! >> "%log_file%"
-   ) else (
-      echo [!ts!]-[AddModifyKey-Error] Unexpected error - !key_path! - !value_type! - !data! >> "%log_file%"
+   REM caso especial /ve
+   if /i "%value_name%"=="/ve" (
+      if "%data%"=="" (
+         echo [!ts!]-[AddModifyKey-ErrorNull] Missing Data - %key_path% - %value_type% >> "%log_file%"
+         goto :eof
+      )
+      reg add "%key_path%" /ve /d "%data%" /f >nul 2>&1
+      if %errorlevel% equ 0 (
+         echo [!ts!]-[AddModifyKey-Ok] Key created - %key_path% - %value_type% - %data% >> "%log_file%"
+      ) else (
+         echo [!ts!]-[AddModifyKey-Error] Unexpected error - %key_path% - %value_type% - %data% >> "%log_file%"
+      )
+      goto :eof
    )
-   goto :eof
-)
-if not defined value_name (
-   echo [!ts!]-[AddModifyKey-ErrorNull] Missing ValueName - !key_path! - !value_type! - !data! >> "%log_file%"
-   goto :eof
-)
-if not defined value_type (
-   echo [!ts!]-[AddModifyKey-ErrorNull] Missing ValueType - !key_path! - !value_name! - !data! >> "%log_file%"
-   goto :eof
-)
-if not defined data (
-   echo [!ts!]-[AddModifyKey-ErrorNull] Missing Data - !key_path! - !value_name! - !value_type! >> "%log_file%"
-   goto :eof
-)
-
-REM ejecutar reg add y capturar salida
-reg add "!key_path!" /v "!value_name!" /t !value_type! /d "!data!" /f >nul 2>&1
-if !errorlevel! equ 0 (
-   echo [!ts!]-[AddModifyKey-Ok] !key_path! - !value_name! - !value_type! - !data! >> "%log_file%"
-) else (
-   echo [!ts!]-[AddModifyKey-Error] Unexpected error !key_path! - !value_name! - !value_type! - !data! >> "%log_file%"
-)
+   if not defined value_name (
+      echo [!ts!]-[AddModifyKey-ErrorNull] Missing ValueName - %key_path% - %value_type% - %data% >> "%log_file%"
+      goto :eof
+   )
+   if not defined value_type (
+      echo [!ts!]-[AddModifyKey-ErrorNull] Missing ValueType - %key_path% - %value_name% - %data% >> "%log_file%"
+      goto :eof
+   )
+   if not defined data (
+      echo [!ts!]-[AddModifyKey-ErrorNull] Missing Data - %key_path% - %value_name% - %value_type% >> "%log_file%"
+      goto :eof
+   )
+   REM ejecutar reg add y capturar salida
+   reg add "%key_path%" /v "%value_name%" /t %value_type% /d "%data%" /f >nul 2>&1
+   if %errorlevel% equ 0 (
+      echo [!ts!]-[AddModifyKey-Ok] Key created - %key_path% - %value_name% - %value_type% - %data% >> "%log_file%"
+   ) else (
+      echo [!ts!]-[AddModifyKey-Error] Unexpected error %key_path% - %value_name% - %value_type% - %data% >> "%log_file%"
+   )
 goto :eof
 
 REM =============================================
@@ -286,27 +295,32 @@ REM Uso para borrar clave: call :reg_del_log "HKEY_CURRENT_USER\Control Panel\Mo
 REM =============================================
 :reg_del_log
 if "%~1"=="" ( goto :eof )
-set "key_path=%~1"
-set "value_name=%~2"
-call :get_ts
+   set "key_path=%~1"
+   set "value_name=%~2"
+   call :get_ts
 
-if defined value_name (
-   REM borrar valor concreto
-   reg delete "!key_path!" /v "!value_name!" /f >nul 2>&1
-   if !errorlevel! equ 0 (
-      echo [!ts!]-[DeletedValue-Ok] !key_path! - !value_name! >> "%log_file%"
-   ) else (
-      echo [!ts!]-[DeletedValue-Error] Missing !key_path! - !value_name! >> "%log_file%"
+   reg query "%key_path%" >nul 2>&1
+   if %errorlevel% neq 0 (
+      echo [!ts!]-[DeletedKey-Error] Path not found - %key_path% >> "%log_file%"
+      goto :eof
    )
-) else (
-   REM borrar clave completa
-   reg delete "!key_path!" /f >nul 2>&1
-   if !errorlevel! equ 0 (
-      echo [!ts!]-[DeletedKey-Ok] !key_path! >> "%log_file%"
+   if defined value_name (
+      REM borrar valor concreto
+      reg delete "%key_path%" /v "%value_name%" /f >nul 2>&1
+      if %errorlevel% equ 0 (
+         echo [!ts!]-[DeletedValue-Ok] Deleted - %key_path% - %value_name% >> "%log_file%"
+      ) else (
+         echo [!ts!]-[DeletedValue-Error] Delete failed - %key_path% - %value_name% >> "%log_file%"
+      )
    ) else (
-      echo [!ts!]-[DeletedKey-Error] Missing !key_path! >> "%log_file%"
-   )   
-)
+      REM borrar clave completa
+      reg delete "%key_path%" /f >nul 2>&1
+      if %errorlevel% equ 0 (
+         echo [!ts!]-[DeletedKey-Ok] Deleted - %key_path% >> "%log_file%"
+      ) else (
+         echo [!ts!]-[DeletedKey-Error] Delete failed - %key_path% >> "%log_file%"
+      )
+   )
 goto :eof
 
 REM =============================================
