@@ -217,7 +217,6 @@ REM Mouse and keyboard buffer sizes credits (https://sites.google.com/view/melod
       call :reg_add_log "HKEY_CURRENT_USER\Software\Microsoft\Multimedia\Audio" "UserDuckingPreference" "REG_DWORD" "%UserDuckingPreference%"
    )
    if "%reset%"=="1" (
-      REM https://www.ninjaone.com/blog/enable-or-disable-mouse-pointer-shadow-in-windows/
       call :reg_del_log "HKEY_CURRENT_USER\Control Panel\Desktodddp" "PointerShadow"
    ) else (
       REM https://www.ninjaone.com/blog/enable-or-disable-mouse-pointer-shadow-in-windows/
@@ -252,13 +251,13 @@ REM =============================================
 
    REM comprobar existencia
    if not defined key_path (
-      echo [!ts!]-[AddModifyKey-ErrorNull] Missing Path - %value_name% - %value_type% - %data% >> "%log_file%"
+      echo [!ts!]-[AddModifyKey-ErrorNull] Path not defined - %value_name% - %value_type% - %data% >> "%log_file%"
       goto :eof
    )
    REM caso especial /ve
    if /i "%value_name%"=="/ve" (
       if "%data%"=="" (
-         echo [!ts!]-[AddModifyKey-ErrorNull] Missing Data - %key_path% - %value_type% >> "%log_file%"
+         echo [!ts!]-[AddModifyKey-ErrorNull] Data not defined - %key_path% - %value_type% >> "%log_file%"
          goto :eof
       )
       reg add "%key_path%" /ve /d "%data%" /f >nul 2>&1
@@ -270,15 +269,15 @@ REM =============================================
       goto :eof
    )
    if not defined value_name (
-      echo [!ts!]-[AddModifyKey-ErrorNull] Missing ValueName - %key_path% - %value_type% - %data% >> "%log_file%"
+      echo [!ts!]-[AddModifyKey-ErrorNull] ValueName not defined - %key_path% - %value_type% - %data% >> "%log_file%"
       goto :eof
    )
    if not defined value_type (
-      echo [!ts!]-[AddModifyKey-ErrorNull] Missing ValueType - %key_path% - %value_name% - %data% >> "%log_file%"
+      echo [!ts!]-[AddModifyKey-ErrorNull] ValueType not defined - %key_path% - %value_name% - %data% >> "%log_file%"
       goto :eof
    )
    if not defined data (
-      echo [!ts!]-[AddModifyKey-ErrorNull] Missing Data - %key_path% - %value_name% - %value_type% >> "%log_file%"
+      echo [!ts!]-[AddModifyKey-ErrorNull] Data not defined - %key_path% - %value_name% - %value_type% >> "%log_file%"
       goto :eof
    )
    REM ejecutar reg add y capturar salida
