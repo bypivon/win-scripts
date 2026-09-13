@@ -160,14 +160,12 @@ REM En Half-Life y Counter-Strike 1.6, no uses -noforcemspd ni -noforcemparms).
 REM ¡Disfruta de una respuesta exacta del ratón al puntero con la configuración personalizada de tu escritorio!)
 REM Mouse and keyboard buffer sizes credits (https://sites.google.com/view/melodystweaks/home)
 :apply_kbm_tweaks
+   echo === Iniciando ajustes === >> "%log_file%"
    echo %alert_log% %msg_alert%..
 
    REM AJUSTES MOUSE
    REM https://www.elevenforum.com/t/enable-or-disable-mouse-haptic-feedback-in-windows-11.46083/
    REM call :reg_add_log "HKEY_CURRENT_USER\Software\Microsoft\Windows NT\CurrentVersion\Windows\EnhancedPenSupport" "MouseFeedbackEnabled" REG_DWORD "%MouseFeedbackEnabled%"
-
-   REM https://www.ninjaone.com/blog/enable-or-disable-mouse-pointer-shadow-in-windows/
-   call :reg_add_log "HKEY_CURRENT_USER\Control Panel\Desktop" "PointerShadow" "REG_SZ" "%PointerShadow%"
 
    REM LIMITACION DE LA FRECUENCIA DEL MOUSE PARA APPS EN 2DO PLANO (LAS APPS EN 2DO PLANO NO NECESITAN ALTAS TASAS DE SONDEO COMO LAS APPS EN 1ER PLANO)
    REM Podría ser útil en casos como el de un usuario con una CPU extremadamente lenta y un ratón de 8000 Hz.
@@ -220,11 +218,15 @@ REM Mouse and keyboard buffer sizes credits (https://sites.google.com/view/melod
    )
    if "%reset%"=="1" (
       REM https://www.ninjaone.com/blog/enable-or-disable-mouse-pointer-shadow-in-windows/
-      call :reg_del_log "HKEY_CURRENT_USER\Control Panel\Desktop" "PointerShadow"
+      call :reg_del_log "HKEY_CURRENT_USER\Control Panel\Desktodddp" "PointerShadow"
+   ) else (
+      REM https://www.ninjaone.com/blog/enable-or-disable-mouse-pointer-shadow-in-windows/
+      call :reg_add_log "HKEY_CURRENT_USER\Control Panel\Desktop" "PointerShadow" "REG_SZ" "%PointerShadow%"
    )
 
    echo %alert_log% Puedes revisar logs en el directorio de ejecucion del script.
-   echo %alert_success% Ajustes aplicados. Reinicia.
+   echo %alert_success% Ajustes completados. Reinicia.
+   echo === Ajustes completados === >> "%log_file%"
    pause
 
 goto menu_kbm
@@ -260,7 +262,7 @@ REM =============================================
          goto :eof
       )
       reg add "%key_path%" /ve /d "%data%" /f >nul 2>&1
-      if %errorlevel% equ 0 (
+      if !errorlevel! equ 0 (
          echo [!ts!]-[AddModifyKey-Ok] Key created - %key_path% - %value_type% - %data% >> "%log_file%"
       ) else (
          echo [!ts!]-[AddModifyKey-Error] Unexpected error - %key_path% - %value_type% - %data% >> "%log_file%"
@@ -307,7 +309,7 @@ if "%~1"=="" ( goto :eof )
    if defined value_name (
       REM borrar valor concreto
       reg delete "%key_path%" /v "%value_name%" /f >nul 2>&1
-      if %errorlevel% equ 0 (
+      if !errorlevel! equ 0 (
          echo [!ts!]-[DeletedValue-Ok] Deleted - %key_path% - %value_name% >> "%log_file%"
       ) else (
          echo [!ts!]-[DeletedValue-Error] Delete failed - %key_path% - %value_name% >> "%log_file%"
@@ -315,7 +317,7 @@ if "%~1"=="" ( goto :eof )
    ) else (
       REM borrar clave completa
       reg delete "%key_path%" /f >nul 2>&1
-      if %errorlevel% equ 0 (
+      if !errorlevel! equ 0 (
          echo [!ts!]-[DeletedKey-Ok] Deleted - %key_path% >> "%log_file%"
       ) else (
          echo [!ts!]-[DeletedKey-Error] Delete failed - %key_path% >> "%log_file%"
