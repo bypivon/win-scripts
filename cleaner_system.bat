@@ -1,5 +1,5 @@
+chcp 65001 >nul 2>&1
 @echo off
-REM chcp 65001 >nul 2>&1
 title bypivon_system_cleaner_script - bypivon@protonmail.com
 REM =============================================
 REM script para Windows 10/11
