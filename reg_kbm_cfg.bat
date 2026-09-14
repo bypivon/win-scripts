@@ -1,6 +1,6 @@
 @echo off
-chcp 65001 >nul 2>&1
 title bypivon_kbm_script - bypivon@protonmail.com
+chcp 65001 >nul 2>&1
 REM =============================================
 REM script para Windows 10/11
 REM author: bypivon
