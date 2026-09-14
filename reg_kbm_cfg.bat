@@ -281,7 +281,7 @@ REM =============================================
       goto :eof
    )
    REM ejecutar reg add y capturar salida
-   reg add "%key_path%" /v "%value_name%" /t %value_type% /d "%data%" /f >nul 2>&1
+   reg add "%key_path%" /v "%value_name%" /t "%value_type%" /d "%data%" /f >nul 2>&1
    if %errorlevel% equ 0 (
       echo [!ts!]-[AddModifyKey-Ok] Key created - %key_path% - %value_name% - %value_type% - %data% >> "%log_file%"
    ) else (
