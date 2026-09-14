@@ -883,13 +883,6 @@ REM =============================================
 :clean_by_ext
    if "%~1"=="" ( goto :eof )
    set "path=%~1"
-   REM set "base=%~dp1"
-   REM set "mask=%~nx1"
-   REM set /a "max_attempts=3"
-   REM set /a "count=0"
-   REM :loop
-   REM set /a count+=1
-
    call :take_control "%path%"
    call :get_ts
 
@@ -907,25 +900,6 @@ REM =============================================
    ) else (
       echo [!ts!]-[Clean-Warn] Files not found - "%path%" >> "%log_file%"
    )
-
-   REM Carpetas
-   REM for /d %%D in ("%base%%mask%") do (
-   REM call :take_control "%%~fD"
-   REM   rd /s /q "%%~fD" >nul 2>&1
-   REM   if !errorlevel! neq 0 (
-   REM       echo [!ts!]-[Clean-Error] Failed folder - %%~fD >> "%log_file%"
-   REM    ) else (
-   REM       echo [!ts!]-[Clean-Ok] Deleted folder - %%~fD >> "%log_file%"
-   REM    )
-   REM )
-
-   REM Repetir si aun existen coincidencias y no se superó el máximo
-   REM if exist "%path%" if %count% lss %max_attempts% goto loop
-
-   REM Si aún existen después del máximo
-   REM if exist "%path%" (
-   REM    echo [!ts!]-[Clean-Warn] Max attempts reached, residual files remain - %path% >> "%log_file%"
-   REM )
 goto :eof
 
 REM ============================================= 
