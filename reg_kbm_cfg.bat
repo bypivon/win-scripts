@@ -217,7 +217,7 @@ REM Mouse and keyboard buffer sizes credits (https://sites.google.com/view/melod
       call :reg_add_log "HKEY_CURRENT_USER\Software\Microsoft\Multimedia\Audio" "UserDuckingPreference" "REG_DWORD" "%UserDuckingPreference%"
    )
    if "%reset%"=="1" (
-      call :reg_del_log "HKEY_CURRENT_USER\Control Panel\Desktodddp" "PointerShadow"
+      call :reg_del_log "HKEY_CURRENT_USER\Control Panel\Desktop" "PointerShadow"
    ) else (
       REM https://www.ninjaone.com/blog/enable-or-disable-mouse-pointer-shadow-in-windows/
       call :reg_add_log "HKEY_CURRENT_USER\Control Panel\Desktop" "PointerShadow" "REG_SZ" "%PointerShadow%"
