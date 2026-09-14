@@ -211,7 +211,8 @@ if errorlevel 1 goto clean_confirm
    call :clean_path_all "%SystemRoot%\System32\config\systemprofile\AppData\Local\Microsoft\Windows\INetCache"
    call :clean_path_all "%SystemRoot%\System32\config\systemprofile\AppData\Local\Microsoft\Windows\INetCookies"
    call :clean_path_all "%LocalAppData%\Microsoft\Windows\Burn\Burn"
-   REM call :clean_path_all "%LocalAppData%\Microsoft\Windows\Ringtones"
+   call :clean_path_all "%LocalAppData%\Microsoft\Windows\RoamingTiles"
+   call :clean_path_all "%LocalAppData%\Microsoft\Windows\Ringtones"
    call :clean_path_all "%LocalAppData%\Microsoft\Windows\ActionCenterCache"
    call :clean_path_all "%LocalAppData%\Microsoft\Windows\IECompatCache"
    call :clean_path_all "%LocalAppData%\Microsoft\Windows\IECompatUaCache"
@@ -481,9 +482,10 @@ if errorlevel 1 goto clean_confirm
    if errorlevel 1 (
       echo %alert_error% No se pudo ejecutar cleanmgr.exe.
    )
-   
+
    echo %alert_log% Ejecutando sensor de almacenamiento (StorageSense) ..
-   call :run_ps "try{Start-StorageSense -Cleanup; exit 0}catch{exit 1}"
+   REM call :run_ps "try{ Start-ScheduledTask -TaskPath '\Microsoft\Windows\DiskCleanup' -TaskName 'SilentCleanup'; exit 0}catch{exit 1}"
+   "%windir%\system32\cleanmgr.exe" /autocleanstoragesense /d %systemdrive%
    if errorlevel 1 (
       echo %alert_error% No se pudo ejecutar StorageSense.
    )
@@ -545,7 +547,7 @@ if errorlevel 1 goto clean_confirm
       REM LOCAL APP DATA
       call :clean_path_all "%LocalAppData%\Discord\packages\SquirrelTemp"
       call :clean_path_all "%LocalAppData%\SquirrelTemp"
-      REM ROAMING
+      REM APP DATA
       call :clean_path_all "%AppData%\discord\logs"
       REM call :clean_path_all "%AppData%\discord\Local Storage"
       call :clean_path_all "%AppData%\discord\GPUCache"
@@ -770,7 +772,6 @@ if errorlevel 1 goto clean_confirm
       sc stop "CldFlt" >nul 2>&1
       timeout /t 2 /nobreak >nul 2>&1
 
-      REM Detener tareas programadas relacionadas con OneDrive
       echo %alert_log% Deteniendo tareas relacionadas ..
       call :run_ps "Get-ScheduledTask -TaskPath '\Microsoft\OneDrive\OneDrive Standalone Update Task' -ErrorAction SilentlyContinue | Stop-ScheduledTask -ErrorAction SilentlyContinue"
       call :run_ps "Get-ScheduledTask -TaskPath '\Microsoft\OneDrive\OneDrive Reporting Task' -ErrorAction SilentlyContinue | Stop-ScheduledTask -ErrorAction SilentlyContinue"
@@ -800,8 +801,8 @@ if errorlevel 1 goto clean_confirm
    if errorlevel 2 (
       echo %alert_log% Se omitio la limpieza.
    ) else (
-      echo %alert_question% Desea eliminar todos los puntos de restauracion o solo el mas antiguo?
-      choice /c 123 /n /m "%alert_question% 1=Antiguo / 2=Todos / 3=Omitir"
+      echo %alert_question% Desea eliminar todos los puntos de restauracion o solo los mas antiguos?
+      choice /c 123 /n /m "%alert_question%1=Antiguos / 2=Todos / 3=Omitir:"
       if errorlevel 3 goto recycle_bin
       if errorlevel 2 ( vssadmin delete shadows /for=%SystemDrive% /all /quiet >> "%log_file%" )
       if errorlevel 1 ( vssadmin delete shadows /for=%SystemDrive% /oldest /quiet >> "%log_file%" )
