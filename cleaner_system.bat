@@ -480,14 +480,14 @@ if errorlevel 1 goto clean_confirm
    start "" explorer.exe >nul 2>&1
 
    echo %alert_log% Ejecutando limpiador de Windows ..
-   "%WinDir%\System32\cleanmgr.exe" /verylowdisk
+   "%WinDir%\System32\cleanmgr.exe" /d %SystemDrive% /verylowdisk
    if errorlevel 1 (
       echo %alert_error% No se pudo ejecutar cleanmgr.exe.
    )
 
    echo %alert_log% Ejecutando sensor de almacenamiento (StorageSense) ..
    REM call :run_ps "try{ Start-ScheduledTask -TaskPath '\Microsoft\Windows\DiskCleanup' -TaskName 'SilentCleanup'; exit 0}catch{exit 1}"
-   "%windir%\system32\cleanmgr.exe" /autocleanstoragesense /d %systemdrive%
+   "%windir%\system32\cleanmgr.exe" /d %SystemDrive% /autocleanstoragesense
    if errorlevel 1 (
       echo %alert_error% No se pudo ejecutar StorageSense.
    )
