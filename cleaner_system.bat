@@ -263,7 +263,7 @@ if errorlevel 1 goto clean_confirm
    REM SoftLanding
    call :clean_path_all "%SystemRoot%\System32\Tasks\SoftLanding"
 
-   REM CONJUNTO RECOPILADORES DE DATOS > SYSTEM DIAGNOSTICS / SYSTEM PERFORMANCE
+   REM CONJUNTO RECOPILADORES DE DATOS - SYSTEM DIAGNOSTICS / SYSTEM PERFORMANCE
    echo %alert_log% Limpiando archivos del recopilador de rendimiento ..
    call :clean_path_all "%systemdrive%\perflogs\System\Performance"
    call :clean_path_all "%systemdrive%\perflogs\System\Diagnostics"
@@ -337,7 +337,7 @@ if errorlevel 1 goto clean_confirm
    call :clean_path_all "%ProgramData%\Microsoft\DeviceSync"
    
    REM Datos de sincronización entre dispositivos (teléfono-PC, Bluetooth, notificaciones cruzadas).
-   REM C:\Users\User\AppData\Local\ConnectedDevicesPlatform\L.User -> directorio especifico con nombre del usuario
+   REM C:\Users\User\AppData\Local\ConnectedDevicesPlatform\L.User - directorio especifico con nombre del usuario
    echo %alert_log% Limpiando cache de sincronizacion entre dispositivos ..
    call :clean_path_all "%LocalAppData%\ConnectedDevicesPlatform\L.%USERNAME%"
 
@@ -492,6 +492,41 @@ if errorlevel 1 goto clean_confirm
       echo %alert_error% No se pudo ejecutar StorageSense.
    )
 
+   REM CACHE RED
+   echo %alert_warning%Podria perder la conexion en el proceso, muy util si experimenta problemas de red.
+   choice /c YN /n /m "%alert_question%Desea limpiar cache de red? Y/N:"
+   if errorlevel 2 (
+      echo %alert_log% Se omitio la limpieza.
+   ) else (
+      echo %alert_log% Limpiando cache DNS ..
+      ipconfig /flushdns >> "%log_file%"
+      
+      echo %alert_log% Limpiando cache ARP ..
+      arp -d * >> "%log_file%"
+      netsh int ip delete arpcache >> "%log_file%"
+      
+      echo %alert_log% Limpiando cache NetBIOS ..
+      nbtstat -R >> "%log_file%"
+     
+      echo %alert_log% Registrando DNS y renovando parametros ..
+      ipconfig /registerdns >> "%log_file%"
+
+      REM echo %alert_log% Limpiando IP ..
+      REM ipconfig /release >> "%log_file%"
+
+      REM echo %alert_log% Renovando IP ..
+      REM ipconfig /renew >> "%log_file%"
+
+      REM Restableciendo protocolos y reconstruyendo el Stack de Red (Recomendado tras fallos de conexion)
+      echo %alert_log% Reiniciando Winsock ..
+      netsh winsock reset >> "%log_file%"
+      
+      echo %alert_log% Restaurando TCP/IP, IPv6 y protocolos TCP ..
+      netsh int ip reset >> "%log_file%"
+      netsh int ipv6 reset >> "%log_file%"
+      netsh int tcp reset >> "%log_file%"
+   )
+
    REM BLOQUE EPIC STEAM DISCORD
    echo %alert_warning%Algunos archivos necesitaran volver a generarse automaticamente con el uso.
    choice /c YN /n /m "%alert_question%Desea limpiar cache, logs y temporales Steam, Epic y Discord? Y/N:"
@@ -581,7 +616,7 @@ if errorlevel 1 goto clean_confirm
       call :clean_path_all "%LocalAppData%\NVIDIA\GLCache"
       call :clean_path_all "%LocalAppData%\NVIDIA\NvBackend\Logs"
       REM call :clean_path_all "%LocalAppData%\NVIDIA"
-      REM call :clean_path_all "%ProgramData%\NVIDIA"
+      call :clean_path_all "%ProgramData%\NVIDIA"
       REM call :clean_path_all "%LocalAppData%\NVIDIA Corporation"
       call :clean_path_all "%AppData%\NVIDIA\ComputeCache"
       call :clean_path_all "%UserProfile%\AppData\LocalLow\NVIDIA\DXCache"
@@ -604,7 +639,7 @@ if errorlevel 1 goto clean_confirm
       REM call :clean_path_all "%LocalAppData%\AMD"
       REM call :clean_path_all "%ProgramData%\AMD"
       REM call :clean_path_all "%AppData%\AMD"
-   
+
       REM INTEL
       REM archivos de registro para registros de control de Intel® Arc (https://www.intel.com/content/www/us/en/support/articles/000095081/graphics.html)
       call :clean_path_all "%LocalAppData%\Intel\IGN\logs"
