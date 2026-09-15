@@ -154,7 +154,7 @@ if errorlevel 1 goto clean_confirm
    REM El uso del parámetro /ResetBase junto con el parámetro /StartComponentCleanup de DISM.exe en una versión en ejecución de Windows 10 o posterior 
    REM elimina todas las versiones sustituidas de cada componente del almacén de componentes.
    echo %alert_log% Limpiando temporales del almacen de componentes ..
-   REM Dism.exe /online /Cleanup-Image /StartComponentCleanup /ResetBase
+   "%SystemRoot%\System32\Dism.exe" /online /Cleanup-Image /StartComponentCleanup /ResetBase >nul 2>&1
    call :clean_path_all "%SystemRoot%\WinSxS\Temp"
 
    REM Carpeta temporal de instaladores de Microsoft x86.
@@ -219,6 +219,8 @@ if errorlevel 1 goto clean_confirm
    call :clean_path_all "%LocalAppData%\Microsoft\Windows\PPBCompatCache"
    call :clean_path_all "%LocalAppData%\Microsoft\Windows\PPBCompatUaCache"
    call :clean_path_all "%LocalAppData%\Microsoft\Windows\PRICache"
+   call :clean_path_all "%LocalAppData%\Microsoft\FeedbackHub\Cache"
+   call :clean_path_all "%ProgramData%\Microsoft\Diagnosis"
    REM Stores crash dump files for various applications
    call :clean_path_all "%LocalAppData%\CrashDumps"
 
@@ -244,8 +246,8 @@ if errorlevel 1 goto clean_confirm
    REM call :clean_path_all "%SystemRoot%\Tasks"
    call :clean_path_all "%SystemRoot%\tracing"
    call :clean_path_all "%SystemRoot%\CbsTemp"
-   REM Contains minidump files created during system crashes
-   REM call :clean_path_all "%SystemRoot%\Minidumps"
+   REM Contains minidump files created during system crashes (volcado de memoria)
+   call :clean_path_all "%SystemRoot%\Minidump"
    REM Almacena datos de diagnóstico y telemetría que Windows envía a Microsoft.
    call :clean_path_all "%SystemRoot%\DiagTrack"
    REM Carpeta de depuración (debug logs).
@@ -690,7 +692,7 @@ if errorlevel 1 goto clean_confirm
    REM BLOQUE INDEXER
    echo %alert_warning%Reconstruir el indexador significa que debera cargarse nuevamente
    echo lo cual puede generar una carga en el procesador, siga con precaucion.
-   choice /c YN /n /m "%alert_question%Desea reconstruir el indexador "Busqueda/Searches"? Y/N:"
+   choice /c YN /n /m "%alert_question%Desea reconstruir el indexador Busqueda/Searches? Y/N:"
    if errorlevel 2 (
       echo %alert_log% Se omitio la limpieza.
    ) else (
