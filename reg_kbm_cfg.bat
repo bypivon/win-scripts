@@ -96,7 +96,7 @@ if errorlevel 1 goto opcion_1
  set "DoubleClickSpeed=480"
  set "MouseHoverTime=200"
  set "ActiveWindowTracking=0"
- set "DataQueueSize=16"
+ set "DataQueueSize=24"
  set "PrintScreenKeyForSnippingEnabled=1"
  set "WppRecorder=0"
  set "PointerShadow=0"
@@ -184,7 +184,7 @@ REM Mouse and keyboard buffer sizes credits (https://sites.google.com/view/melod
    REM call :reg_add_log "HKEY_CURRENT_USER\Control Panel\Mouse" "MouseDelay" "REG_SZ" "%MouseDelay%"
    call :reg_add_log "HKEY_CURRENT_USER\Control Panel\Mouse" "MouseTrails" "REG_SZ" "%MouseTrails%"
    call :reg_add_log "HKEY_CURRENT_USER\Control Panel\Mouse" "ActiveWindowTracking" "REG_DWORD" "%ActiveWindowTracking%"
-   REM cantidad de eventos que pueden ser almacenados en la cola del controlador del mouse (tweak=16, defalut=100)
+   REM cantidad de eventos que pueden ser almacenados en la cola del controlador del mouse (tweak=16/more, defalut=100)
    call :reg_add_log "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\mouclass\Parameters" "MouseDataQueueSize" "REG_DWORD" "%DataQueueSize%"
 
    REM AJUSTES TECLADO
@@ -192,7 +192,7 @@ REM Mouse and keyboard buffer sizes credits (https://sites.google.com/view/melod
    call :reg_add_log "HKEY_CURRENT_USER\Control Panel\Keyboard" "KeyboardSpeed" "REG_SZ" "%KeyboardSpeed%"
    call :reg_add_log "HKEY_CURRENT_USER\Control Panel\Keyboard" "PrintScreenKeyForSnippingEnabled" "REG_DWORD" "%PrintScreenKeyForSnippingEnabled%"
 
-   REM cantidad de eventos que pueden ser almacenados en la cola del controlador del teclado (tweak=16, defalut=100)
+   REM cantidad de eventos que pueden ser almacenados en la cola del controlador del teclado (tweak=16/more, defalut=100)
    call :reg_add_log "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\kbdclass\Parameters" "KeyboardDataQueueSize" "REG_DWORD" "%DataQueueSize%"
 
    REM Marcas de tiempo en cada evento registrado por los controladores del teclado/mouse
