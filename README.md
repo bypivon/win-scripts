@@ -31,20 +31,20 @@
 > Para el script "reg_system_cfg" es conveniente ejecutarlo en Modo Seguro.
 
 ## All sources:
-https://learn.microsoft.com/es-es/windows/privacy/manage-connections-from-windows-operating-system-components-to-microsoft-services
-https://learn.microsoft.com/en-us/windows/iot/iot-enterprise/soft-real-time/soft-real-time-device 
-https://learn.microsoft.com/en-us/windows/win32/procthread/multimedia-class-scheduler-service
-https://learn.microsoft.com/en-us/answers/questions/4134946/what-is-sysmain-and-why-does-it-sometimes-use-a-bu
-https://learn.microsoft.com/es-es/powershell/module/mmagent/enable-mmagent?view=windowsserver2022-ps#description
-https://learn.microsoft.com/en-us/windows/win32/memory/memory-management-registry-keys
-https://learn.microsoft.com/es-es/powershell/module/mmagent/
-https://support.microsoft.com/es-es/windows/hardware/display-graphics/change-the-refresh-rate-on-your-monitor-in-windows
-https://sites.google.com/view/melodystweaks/home
-https://stackoverflow.com/questions/3744032/why-are-net-timers-limited-to-15-ms-resolution
-https://github.com/zoicware/RepairBadTweaks
-https://donewmouseaccel.blogspot.com/2010/04/markc-mouse-acceleration-fix-builder.html
-https://blogs.windows.com/windowsdeveloper/2023/05/26/delivering-delightful-performance-for-more-than-one-billion-users-worldwide/
-& more people.
+- https://learn.microsoft.com/es-es/windows/privacy/manage-connections-from-windows-operating-system-components-to-microsoft-services
+- https://learn.microsoft.com/en-us/windows/iot/iot-enterprise/soft-real-time/soft-real-time-device 
+- https://learn.microsoft.com/en-us/windows/win32/procthread/multimedia-class-scheduler-service
+- https://learn.microsoft.com/en-us/answers/questions/4134946/what-is-sysmain-and-why-does-it-sometimes-use-a-bu
+- https://learn.microsoft.com/es-es/powershell/module/mmagent/enable-mmagent?view=windowsserver2022-ps#description
+- https://learn.microsoft.com/en-us/windows/win32/memory/memory-management-registry-keys
+- https://learn.microsoft.com/es-es/powershell/module/mmagent/
+- https://support.microsoft.com/es-es/windows/hardware/display-graphics/change-the-refresh-rate-on-your-monitor-in-windows
+- https://sites.google.com/view/melodystweaks/home
+- https://stackoverflow.com/questions/3744032/why-are-net-timers-limited-to-15-ms-resolution
+- https://github.com/zoicware/RepairBadTweaks
+- https://donewmouseaccel.blogspot.com/2010/04/markc-mouse-acceleration-fix-builder.html
+- https://blogs.windows.com/windowsdeveloper/2023/05/26/delivering-delightful-performance-for-more-than-one-billion-users-worldwide/
+- & more people.
 
 ###### Se agradecen los comentarios y las críticas constructivas.
 ###### bypivon@protonmail.com
