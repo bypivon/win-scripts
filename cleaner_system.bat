@@ -457,6 +457,11 @@ if errorlevel 1 goto clean_confirm
    call :clean_path_all "%LocalAppData%\Packages\LocalState\Temp"
    call :clean_path_all "%LocalAppData%\Packages\LocalCache"
 
+   REM Limpiar cache Store
+   echo %alert_log% Limpiando cache Microsoft Store ..
+   call :clean_path_all "%LocalAppData%\Packages\Microsoft.WindowsStore_8wekyb3d8bbwe\LocalCache"
+   "%SystemRoot%\System32\WSReset.exe"
+
    REM Caché de Direct3D Shader
    echo %alert_log% Limpiando cache Direct3D ..
    call :clean_path_all "%LocalAppData%\D3DSCache"
