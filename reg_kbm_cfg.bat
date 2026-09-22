@@ -97,7 +97,7 @@ if errorlevel 1 goto opcion_1
  set "MouseHoverTime=200"
  set "ActiveWindowTracking=0"
  set "DataQueueSize=24"
- set "PrintScreenKeyForSnippingEnabled=1"
+ set "PrintScreenKeyForSnippingEnabled=0"
  set "WppRecorder=0"
  set "PointerShadow=0"
  set "apply_curve=0"
