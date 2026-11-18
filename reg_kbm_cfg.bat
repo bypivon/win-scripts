@@ -83,7 +83,9 @@ if errorlevel 2 goto opcion_2
 if errorlevel 1 goto opcion_1
 :opcion_1
  set "msg_alert=Aplicando ajustes"
- set "reset=0"
+ set "reset_values=0"
+ set "apply_curve=0"
+ set "apply_nosound=0"
  REM set "MouseFeedbackEnabled=0"
  set "MouseSensitivity=10"
  REM set "MouseDelay=0"
@@ -96,12 +98,10 @@ if errorlevel 1 goto opcion_1
  set "DoubleClickSpeed=480"
  set "MouseHoverTime=200"
  set "ActiveWindowTracking=0"
- set "DataQueueSize=24"
+ set "DataQueueSize=18"
  set "PrintScreenKeyForSnippingEnabled=0"
  set "WppRecorder=0"
  set "PointerShadow=0"
- set "apply_curve=0"
- set "nosound=0"
    echo %alert_info%Recomendado para Win10, si selecciona NO se usara la curva default.
    choice /c YNO /n /m "%alert_question%Desea aplicar el fix por MarkC? Y/N/O:"
    if errorlevel 3 goto menu_kbm
@@ -117,7 +117,7 @@ if errorlevel 1 goto opcion_1
    if errorlevel 3 goto menu_kbm
    if errorlevel 2 goto apply_kbm_tweaks
    if errorlevel 1 (
-      set "nosound=1"
+      set "apply_nosound=1"
       set "WinSounds=.None"
       set "UserDuckingPreference=3"
       set "Beep=no"
@@ -126,7 +126,9 @@ if errorlevel 1 goto opcion_1
    )
 :opcion_2
  set "msg_alert=Restableciendo valores predeterminados"
- set "reset=1"
+ set "reset_values=1"
+ set "apply_curve=1"
+ set "apply_nosound=1"
  REM set "MouseFeedbackEnabled=1"
  set "MouseSensitivity=10"
  REM set "MouseDelay=1"
@@ -148,8 +150,6 @@ if errorlevel 1 goto opcion_1
  set "UserDuckingPreference=1"
  set "SmoothMouseXCurve=0000000000000000156e000000000000004001000000000029dc0300000000000000280000000000"
  set "SmoothMouseYCurve=0000000000000000fd11010000000000002404000000000000fc12000000000000c0bb0100000000"
- set "apply_curve=1"
- set "nosound=1"
 goto apply_kbm_tweaks
 
 REM Curve Mouse fix credits MarkC (https://donewmouseaccel.blogspot.com/2010/04/markc-mouse-acceleration-fix-builder.html)
@@ -191,7 +191,6 @@ REM Mouse and keyboard buffer sizes credits (https://sites.google.com/view/melod
    call :reg_add_log "HKEY_CURRENT_USER\Control Panel\Keyboard" "KeyboardDelay" "REG_SZ" "%KeyboardDelay%"
    call :reg_add_log "HKEY_CURRENT_USER\Control Panel\Keyboard" "KeyboardSpeed" "REG_SZ" "%KeyboardSpeed%"
    call :reg_add_log "HKEY_CURRENT_USER\Control Panel\Keyboard" "PrintScreenKeyForSnippingEnabled" "REG_DWORD" "%PrintScreenKeyForSnippingEnabled%"
-
    REM cantidad de eventos que pueden ser almacenados en la cola del controlador del teclado (tweak=16/more, defalut=100)
    call :reg_add_log "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\kbdclass\Parameters" "KeyboardDataQueueSize" "REG_DWORD" "%DataQueueSize%"
 
@@ -206,7 +205,7 @@ REM Mouse and keyboard buffer sizes credits (https://sites.google.com/view/melod
       call :reg_add_log "HKEY_CURRENT_USER\Control Panel\Mouse" "SmoothMouseXCurve" "REG_BINARY" "%SmoothMouseXCurve%"
       call :reg_add_log "HKEY_CURRENT_USER\Control Panel\Mouse" "SmoothMouseYCurve" "REG_BINARY" "%SmoothMouseYCurve%"
    )
-   if "%nosound%"=="1" (
+   if "%apply_nosound%"=="1" (
       REM SONIDOS DE WINDOWS
       call :reg_add_log "HKEY_CURRENT_USER\AppEvents\Schemes" "/ve" "REG_SZ" "%WinSounds%"
       REM Desactivar beep del sistema
@@ -216,7 +215,7 @@ REM Mouse and keyboard buffer sizes credits (https://sites.google.com/view/melod
       REM COMUNICACIONES (UserDuckingPreference - 0: Desactivar el resto de los sonidos cuando windows detecta actividad, 1: 80% reduccion, 2: 50% reduccion, 3: No hacer nada)
       call :reg_add_log "HKEY_CURRENT_USER\Software\Microsoft\Multimedia\Audio" "UserDuckingPreference" "REG_DWORD" "%UserDuckingPreference%"
    )
-   if "%reset%"=="1" (
+   if "%reset_values%"=="1" (
       call :reg_del_log "HKEY_CURRENT_USER\Control Panel\Desktop" "PointerShadow"
    ) else (
       REM https://www.ninjaone.com/blog/enable-or-disable-mouse-pointer-shadow-in-windows/
