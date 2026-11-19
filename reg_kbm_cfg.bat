@@ -34,6 +34,11 @@ if not exist "%SYSTEMROOT%\System32\reg.exe" (
    pause
    exit /b 1
 )
+if not exist "%SYSTEMROOT%\System32\powercfg.exe" (
+   echo [ERROR]: powercfg.exe not found.
+   pause
+   exit /b 1
+)
 REM =============================================
 setlocal EnableDelayedExpansion
 REM =============================================
@@ -86,6 +91,8 @@ if errorlevel 1 goto opcion_1
  set "reset_values=0"
  set "apply_curve=0"
  set "apply_nosound=0"
+ set "apply_suspend=0"
+ set "apply_pcie=0"
  REM set "MouseFeedbackEnabled=0"
  set "MouseSensitivity=10"
  REM set "MouseDelay=0"
@@ -129,6 +136,8 @@ if errorlevel 1 goto opcion_1
  set "reset_values=1"
  set "apply_curve=1"
  set "apply_nosound=1"
+ set "apply_suspend=1"
+ set "apply_pcie=1"
  REM set "MouseFeedbackEnabled=1"
  set "MouseSensitivity=10"
  REM set "MouseDelay=1"
@@ -200,6 +209,12 @@ REM Mouse and keyboard buffer sizes credits (https://sites.google.com/view/melod
    call :reg_add_log "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\mouclass\Parameters" "WppRecorder_UseTimeStamp" "REG_DWORD" "%WppRecorder%"
    call :reg_add_log "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\mouhid\Parameters" "WppRecorder_UseTimeStamp" "REG_DWORD" "%WppRecorder%"
 
+   REM USB SELECTIVE SUSPEND
+   call :usb_suspend_log "%apply_suspend%"
+
+   REM PCI EXPRESS - LINK STATE POWER MANAGEMENT (ASPM)
+   call :pcie_aspm_log "%apply_pcie%"
+
    if "%apply_curve%"=="1" (
       REM CURVA
       call :reg_add_log "HKEY_CURRENT_USER\Control Panel\Mouse" "SmoothMouseXCurve" "REG_BINARY" "%SmoothMouseXCurve%"
@@ -261,7 +276,7 @@ REM =============================================
       )
       reg add "%key_path%" /ve /d "%data%" /f >nul 2>&1
       if !errorlevel! equ 0 (
-         echo [!ts!]-[AddModifyKey-Ok] Key created - %key_path% - %value_type% - %data% >> "%log_file%"
+         echo [!ts!]-[AddModifyKey-Ok] Value set - %key_path% - %value_type% - %data% >> "%log_file%"
       ) else (
          echo [!ts!]-[AddModifyKey-Error] Unexpected error - %key_path% - %value_type% - %data% >> "%log_file%"
       )
@@ -282,7 +297,7 @@ REM =============================================
    REM ejecutar reg add y capturar salida
    reg add "%key_path%" /v "%value_name%" /t "%value_type%" /d "%data%" /f >nul 2>&1
    if %errorlevel% equ 0 (
-      echo [!ts!]-[AddModifyKey-Ok] Key created - %key_path% - %value_name% - %value_type% - %data% >> "%log_file%"
+      echo [!ts!]-[AddModifyKey-Ok] Value set - %key_path% - %value_name% - %value_type% - %data% >> "%log_file%"
    ) else (
       echo [!ts!]-[AddModifyKey-Error] Unexpected error %key_path% - %value_name% - %value_type% - %data% >> "%log_file%"
    )
@@ -321,6 +336,86 @@ if "%~1"=="" ( goto :eof )
          echo [!ts!]-[DeletedKey-Error] Delete failed - %key_path% >> "%log_file%"
       )
    )
+goto :eof
+
+REM =============================================
+REM USB SELECTIVE SUSPEND
+REM Uso: call :usb_suspend_log "0"
+REM 0 = Disabled / 1 = Enabled
+REM =============================================
+:usb_suspend_log
+   set "usb_suspend=%~1"
+   REM USB Power Settings GUIDs
+   set "USB_SUBGROUP=2a737441-1930-4402-8d77-b2bebba308a3"
+   set "USB_SELECTIVE=48e6b7a6-50f5-4782-a5d4-53bb8f07e226"
+   call :get_ts
+
+   REM AC
+   powercfg /SETACVALUEINDEX SCHEME_CURRENT %USB_SUBGROUP% %USB_SELECTIVE% %usb_suspend% >nul 2>&1
+   if !errorlevel! equ 0 (
+      echo [!ts!]-[USBSuspend-Ok] AC Selective suspend - %usb_suspend% >> "%log_file%"
+   ) else (
+      echo [!ts!]-[USBSuspend-Error] Failed to apply AC - %usb_suspend% >> "%log_file%"
+   )
+
+   REM DC
+   powercfg /SETDCVALUEINDEX SCHEME_CURRENT %USB_SUBGROUP% %USB_SELECTIVE% %usb_suspend% >nul 2>&1
+   if !errorlevel! equ 0 (
+      echo [!ts!]-[USBSuspend-Ok] DC Selective suspend - %usb_suspend% >> "%log_file%"
+   ) else (
+      echo [!ts!]-[USBSuspend-Error] Failed to apply DC - %usb_suspend% >> "%log_file%"
+   )
+
+   REM Apply current power scheme
+   powercfg /SETACTIVE SCHEME_CURRENT >nul 2>&1
+   if !errorlevel! equ 0 (
+      echo [!ts!]-[USBSuspend-Ok] Current power scheme applied >> "%log_file%"
+   ) else (
+      echo [!ts!]-[USBSuspend-Error] Failed to apply current power scheme >> "%log_file%"
+   )
+   REM Verify AC/DC configuration
+   REM powercfg /QUERY SCHEME_CURRENT %USB_SUBGROUP% %USB_SELECTIVE% >> "%log_file%" 2>&1
+   REM echo [!ts!]-[USBSuspend-Verify] Expected AC/DC - %usb_suspend% >> "%log_file%"
+goto :eof
+
+REM =============================================
+REM PCI EXPRESS - LINK STATE POWER MANAGEMENT
+REM Uso: call :pcie_aspm_log "0"
+REM 0 = Off / 1 = Moderate / 2 = Maximum
+REM =============================================
+:pcie_aspm_log
+   set "pcie_aspm_value=%~1"
+   REM PCI Express Power Settings GUIDs
+   set "PCIE_SUBGROUP=501a4d13-42af-4429-9fd1-a8218c268e20"
+   set "PCIE_ASPM=ee12f906-d277-404b-b6da-e5fa1a576df5"
+   call :get_ts
+
+   REM AC
+   powercfg /SETACVALUEINDEX SCHEME_CURRENT %PCIE_SUBGROUP% %PCIE_ASPM% %pcie_aspm_value% >nul 2>&1
+   if !errorlevel! equ 0 (
+      echo [!ts!]-[PCIE-ASPM-Ok] AC Link State Power Management - %pcie_aspm_value% >> "%log_file%"
+   ) else (
+      echo [!ts!]-[PCIE-ASPM-Error] Failed to apply AC - %pcie_aspm_value% >> "%log_file%"
+   )
+
+   REM DC
+   powercfg /SETDCVALUEINDEX SCHEME_CURRENT %PCIE_SUBGROUP% %PCIE_ASPM% %pcie_aspm_value% >nul 2>&1
+   if !errorlevel! equ 0 (
+      echo [!ts!]-[PCIE-ASPM-Ok] DC Link State Power Management - %pcie_aspm_value% >> "%log_file%"
+   ) else (
+      echo [!ts!]-[PCIE-ASPM-Error] Failed to apply DC - %pcie_aspm_value% >> "%log_file%"
+   )
+
+   REM Apply current power scheme
+   powercfg /SETACTIVE SCHEME_CURRENT >nul 2>&1
+   if !errorlevel! equ 0 (
+      echo [!ts!]-[PCIE-ASPM-Ok] Current power scheme applied >> "%log_file%"
+   ) else (
+      echo [!ts!]-[PCIE-ASPM-Error] Failed to apply current power scheme >> "%log_file%"
+   )
+   REM Verify AC/DC configuration
+   REM powercfg /QUERY SCHEME_CURRENT %PCIE_SUBGROUP% %PCIE_ASPM% >> "%log_file%" 2>&1
+   REM echo [!ts!]-[PCIE-Verify] Expected AC/DC: %pcie_aspm% >> "%log_file%"
 goto :eof
 
 REM =============================================
